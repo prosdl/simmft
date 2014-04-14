@@ -23,7 +23,7 @@ import org.hibernate.annotations.GenericGenerator;
     discriminatorType=DiscriminatorType.STRING
 )
 @DiscriminatorValue("job")
-public class Job {
+public class Job extends SelfDescribingResource {
    @Id 
    @GeneratedValue(generator = "uuid")
    @GenericGenerator(name = "uuid", strategy = "uuid2")

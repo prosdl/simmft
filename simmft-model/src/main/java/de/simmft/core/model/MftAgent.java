@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class MftAgent {
+public class MftAgent extends SelfDescribingResource {
    @Id
    @GeneratedValue(strategy=GenerationType.AUTO)
    private Long id;

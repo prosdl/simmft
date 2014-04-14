@@ -1,23 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
-   <groupId>de.simmft.simmft</groupId>
+   <groupId>de.simmft</groupId>
    <artifactId>simmft-parent</artifactId>
    <version>0.0.1-SNAPSHOT</version>
    <name>MFT Parent</name>
    <packaging>pom</packaging>
    <modules>
       <module>../simmft-model</module>
+      <module>../simmft-rest</module>
+      <module>../simmft-core</module>
+      <module>../simmft-storage</module>
    </modules>
 
 
    <properties>
       <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
+      <jackson.version>2.3.2</jackson.version>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
 
-
-
    <dependencies>
+   
+    <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-core</artifactId>
+         <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-annotations</artifactId>
+         <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         <version>${jackson.version}</version>
+      </dependency>
+      
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-core</artifactId>
@@ -65,6 +86,13 @@
          <version>${org.springframework.version}</version>
       </dependency>
 
+<!-- slf4j-log4j -->
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <version>1.6.1</version>
+      </dependency>
+ 
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>

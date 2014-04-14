@@ -32,12 +32,12 @@
    <bean id="sessionFactory"
       class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
       <property name="dataSource">
-         <ref bean="dataSourceMysql" />
+         <ref bean="dataSourceEmbedded" />
       </property>
       <property name="packagesToScan" value="de.simmft.core.model" />
       <property name="hibernateProperties">
          <props>
-            <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+            <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
             <prop key="hibernate.hbm2ddl.auto">update</prop>
             <prop key="hibernate.show_sql">true</prop>
             <prop key="hibernate.format_sql">true</prop>

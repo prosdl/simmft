@@ -1,5 +1,11 @@
 package de.simmft.core.model;
 
-public class User {
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
+@Entity
+public class User {
+   @Id
+   private String username;
+   private String email;
 }
