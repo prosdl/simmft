@@ -3,6 +3,7 @@ package de.simmft.core.model;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
@@ -13,8 +14,14 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
@@ -29,20 +36,35 @@ public class Job extends SelfDescribingResource {
    @GenericGenerator(name = "uuid", strategy = "uuid2")
    private String uuid;
    
+   @Column(unique=true,nullable=false)
    private String name;
    private String description;
    private String cronExpression;
    private Date created;
    private Boolean useLegacyPGLocking;
    
+   @JsonProperty
+   @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
+   @JsonIdentityReference(alwaysAsId = true)    
    @ManyToOne
    private AdministrativeApplication administrativeApplication;
    
-   @ManyToOne
+   @JsonProperty
+   @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
+   @JsonIdentityReference(alwaysAsId = true)    
+   @ManyToOne()
    private MftAgent from;
    
    @ManyToMany
    private Set<MftAgent> to;
+   
+   public Job() {
+   }
+   
+   public Job(String name) {
+      this.name = name;
+      this.created = new Date();
+   }
 
    public String getUuid() {
       return uuid;
@@ -117,5 +139,9 @@ public class Job extends SelfDescribingResource {
       this.useLegacyPGLocking = useLegacyPGLocking;
    }
    
+   @JsonProperty
+   public String getType() {
+      return this.getClass().getSimpleName();
+   }
    
 }

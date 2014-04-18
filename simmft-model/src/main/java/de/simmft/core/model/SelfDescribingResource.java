@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class SelfDescribingResource {
    
-   @JsonProperty("links")
+   @JsonProperty("_links")
    @JsonInclude(Include.NON_EMPTY)
    @Transient
    private List<Link> links = new ArrayList<>();

@@ -13,4 +13,19 @@
    <name>simmft-core</name>
    <url>http://maven.apache.org</url>
 
+   <dependencies>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>javax.servlet-api</artifactId>
+         <version>3.1-b05</version>
+         <scope>provided</scope>
+      </dependency>
+   
+   
+      <dependency>
+         <groupId>de.simmft</groupId>
+         <artifactId>simmft-model</artifactId>
+         <version>0.0.1-SNAPSHOT</version>
+      </dependency>
+   </dependencies>
 </project>

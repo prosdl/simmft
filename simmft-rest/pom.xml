@@ -56,6 +56,11 @@
          <artifactId>simmft-model</artifactId>
          <version>0.0.1-SNAPSHOT</version>
       </dependency>
+      <dependency>
+         <groupId>de.simmft</groupId>
+         <artifactId>simmft-core</artifactId>
+         <version>0.0.1-SNAPSHOT</version>
+      </dependency>
    </dependencies>
 
    <build>

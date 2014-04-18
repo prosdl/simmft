@@ -2,10 +2,13 @@ package de.simmft.core.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonValue;
 
 @Entity
 public class MftAgent extends SelfDescribingResource {
@@ -13,11 +16,21 @@ public class MftAgent extends SelfDescribingResource {
    @GeneratedValue(strategy=GenerationType.AUTO)
    private Long id;
    
+   @Column(unique=true,nullable=false)
    private String name;
    private String description;
    private String hostServerDns;
    private Date registered;
+   private String hostServerOS;
    
+   public MftAgent() {
+      
+   }
+   
+   public MftAgent(String name) {
+      this.name = name;
+      registered = new Date();
+   }
    
    public Long getId() {
       return id;
@@ -25,6 +38,8 @@ public class MftAgent extends SelfDescribingResource {
    public void setId(Long id) {
       this.id = id;
    }
+   
+   @JsonValue()
    public String getName() {
       return name;
    }
@@ -48,6 +63,14 @@ public class MftAgent extends SelfDescribingResource {
    }
    public void setRegistered(Date registered) {
       this.registered = registered;
+   }
+
+   public String getHostServerOS() {
+      return hostServerOS;
+   }
+
+   public void setHostServerOS(String os) {
+      this.hostServerOS = os;
    }
    
    

@@ -1,5 +1,6 @@
 package de.simmft.core.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,9 +12,19 @@ public class AdministrativeApplication {
    @Id
    @GeneratedValue(strategy=GenerationType.AUTO)
    private Long id;
+   
+   @Column(unique=true,nullable=false)
    private String name;
    private String description;
    
+   
+   public AdministrativeApplication() {
+      
+   }
+   
+   public AdministrativeApplication(String name) {
+      this.name = name;
+   }
    
    public Long getId() {
       return id;
