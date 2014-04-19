@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.simmft.core.model.AdministrativeApplication;
 import de.simmft.core.model.MftAgent;
+import de.simmft.core.model.OauthClientCredentials;
 import de.simmft.core.model.ReceiveJob;
 import de.simmft.core.model.ReceiveJob.MultipleMatchingFilesPolicy;
 import de.simmft.core.model.ReceiveJob.OnFilePresentPolicy;
+import de.simmft.core.model.Role;
 import de.simmft.core.model.SendJob;
 import de.simmft.core.model.SendJob.DeleteAfterTransferPolicy;
 import de.simmft.core.model.dao.AdministrativeApplicationDAO;
@@ -107,11 +109,15 @@ public class TestDataRepositoryImpl implements TestDataRepository {
    public void generate() {
       logger.info("Generate testdata");
 
-      MftAgent mftAgentSender = addOrUpdateEntity(
-            new MftAgent(TEST_MFT_AGENT_SENDER_1), "id", "name",
-            TEST_MFT_AGENT_SENDER_1);
-      MftAgent mftAgentReceiver = addOrUpdateEntity(new MftAgent(
-            TEST_MFT_AGENT_RECEIVER_1), "id", "name", TEST_MFT_AGENT_RECEIVER_1);
+      Role mftAgentRole = new Role("mftagent");
+      
+      MftAgent mftAgentSender = new MftAgent(TEST_MFT_AGENT_SENDER_1, new OauthClientCredentials(TEST_MFT_AGENT_SENDER_1, TEST_MFT_AGENT_SENDER_1));
+      mftAgentSender.setRole(mftAgentRole);
+      mftAgentSender = addOrUpdateEntity(mftAgentSender, "id", "name",TEST_MFT_AGENT_SENDER_1);
+      
+      MftAgent mftAgentReceiver = new MftAgent(TEST_MFT_AGENT_RECEIVER_1, new OauthClientCredentials(TEST_MFT_AGENT_RECEIVER_1, TEST_MFT_AGENT_RECEIVER_1));      
+      mftAgentReceiver.setRole(mftAgentRole);
+      mftAgentReceiver = addOrUpdateEntity(mftAgentReceiver, "id", "name", TEST_MFT_AGENT_RECEIVER_1);
 
       
       AdministrativeApplication testApp = addOrUpdateEntity(new AdministrativeApplication(

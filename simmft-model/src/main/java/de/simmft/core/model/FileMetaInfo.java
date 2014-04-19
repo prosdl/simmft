@@ -9,6 +9,11 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
+/**
+ * 
+ * @deprecated info should be in the physical storage
+ */
+@Deprecated
 @Entity
 public class FileMetaInfo {
    @Id

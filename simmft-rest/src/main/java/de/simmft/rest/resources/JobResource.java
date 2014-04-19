@@ -2,6 +2,7 @@ package de.simmft.rest.resources;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,19 +25,25 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.simmft.core.model.Job;
 import de.simmft.core.model.Link;
+import de.simmft.core.model.Permission.PermissionEnum;
 import de.simmft.core.services.exception.MftCoreServiceException;
 import de.simmft.core.services.jobs.JobService;
 
 @Path("/jobs")
-public class JobResource {
-   private Logger logger = LoggerFactory.getLogger(StorageResource.class);
+public class JobResource implements IJobResource {
+   private Logger logger = LoggerFactory.getLogger(JobResource.class);
 
    @Autowired
    private JobService jobService;
    
    @GET
    @Produces("application/json")
-   public Response getJobs(@Context UriInfo uriinfo, @QueryParam("mft-agent") String mftAgentName) throws JsonProcessingException {
+
+   @Override
+   public Response getJobs(@Context HttpServletRequest httpRequest, @Context UriInfo uriinfo, @QueryParam("mft-agent") String mftAgentName) throws JsonProcessingException {
+
+      logger.info(httpRequest.getUserPrincipal().getName() + "  " + httpRequest.isUserInRole(PermissionEnum.MFT_GET_JOB_LIST.toString()));
+      logger.info("roles:" + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
       
       List<Job> jobs;
       try {

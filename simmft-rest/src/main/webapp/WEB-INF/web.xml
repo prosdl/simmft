@@ -6,18 +6,24 @@
          http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
    version="3.0">
 
+   <!-- ......................................................................... -->
+   <!-- Java Melody monitoring -->
+   <!-- ......................................................................... -->
    <filter>
       <filter-name>monitoring</filter-name>
       <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
    </filter>
    <filter-mapping>
       <filter-name>monitoring</filter-name>
-      <url-pattern>/*</url-pattern>
+      <url-pattern>/rest/*</url-pattern>
    </filter-mapping>
    <listener>
       <listener-class>net.bull.javamelody.SessionListener</listener-class>
    </listener>
 
+   <!-- ......................................................................... -->
+   <!-- Hibernate/Spring OSIV -->
+   <!-- ......................................................................... -->
    <filter>
       <filter-name>hibernateFilter</filter-name>
       <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
@@ -32,6 +38,9 @@
       <url-pattern>/*</url-pattern>
    </filter-mapping>
 
+   <!-- ......................................................................... -->
+   <!-- Spring Application Context -->
+   <!-- ......................................................................... -->
    <context-param>
       <param-name>contextConfigLocation</param-name>
       <param-value>/WEB-INF/applicationContext.xml</param-value>
@@ -39,16 +48,20 @@
 
    <listener>
       <listener-class>
-         org.springframework.web.context.ContextLoaderListener
-      </listener-class>
+         org.springframework.web.context.ContextLoaderListener</listener-class>
    </listener>
 
+   <!-- ......................................................................... -->
+   <!-- simmft bootstrap -->
+   <!-- ......................................................................... -->
    <listener>
       <listener-class>
-         de.simmft.core.servlet.MftBootstrapContextListener
-      </listener-class>
+         de.simmft.core.servlet.MftBootstrapContextListener</listener-class>
    </listener>
 
+   <!-- ......................................................................... -->
+   <!-- Jersey REST -->
+   <!-- ......................................................................... -->
    <servlet>
       <servlet-name>jersey</servlet-name>
       <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -62,4 +75,25 @@
       <servlet-name>jersey</servlet-name>
       <url-pattern>/rest/*</url-pattern>
    </servlet-mapping>
+
+   <servlet>
+      <servlet-name>spring</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+   </servlet>
+
+   <servlet-mapping>
+      <servlet-name>spring</servlet-name>
+      <url-pattern>/</url-pattern>
+   </servlet-mapping>
+   <!-- ......................................................................... -->
+   <!-- Spring Security -->
+   <!-- ......................................................................... -->
+   <filter>
+      <filter-name>springSecurityFilterChain</filter-name>
+      <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+   </filter>
+   <filter-mapping>
+      <filter-name>springSecurityFilterChain</filter-name>
+      <url-pattern>/*</url-pattern>
+   </filter-mapping>
 </web-app>

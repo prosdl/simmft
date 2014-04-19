@@ -2,16 +2,19 @@ package de.simmft.core.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
 @Entity
-public class MftAgent extends SelfDescribingResource {
+public class MftAgent extends SelfDescribingResource implements OauthUser {
    @Id
    @GeneratedValue(strategy=GenerationType.AUTO)
    private Long id;
@@ -23,6 +26,12 @@ public class MftAgent extends SelfDescribingResource {
    private Date registered;
    private String hostServerOS;
    
+   @OneToOne(cascade=CascadeType.ALL)
+   private OauthClientCredentials oauthClientCredentials;
+   
+   @ManyToOne
+   private Role role;
+   
    public MftAgent() {
       
    }
@@ -30,6 +39,11 @@ public class MftAgent extends SelfDescribingResource {
    public MftAgent(String name) {
       this.name = name;
       registered = new Date();
+   }
+   public MftAgent(String name, OauthClientCredentials credentials) {
+      this.name = name;
+      registered = new Date();
+      this.oauthClientCredentials = credentials;
    }
    
    public Long getId() {
@@ -71,6 +85,22 @@ public class MftAgent extends SelfDescribingResource {
 
    public void setHostServerOS(String os) {
       this.hostServerOS = os;
+   }
+
+   public OauthClientCredentials getOauthClientCredentials() {
+      return oauthClientCredentials;
+   }
+
+   public void setOauthClientCredentials(OauthClientCredentials oauthClientCredentials) {
+      this.oauthClientCredentials = oauthClientCredentials;
+   }
+
+   public Role getRole() {
+      return role;
+   }
+
+   public void setRole(Role role) {
+      this.role = role;
    }
    
    

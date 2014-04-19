@@ -72,7 +72,6 @@
          <artifactId>spring-tx</artifactId>
          <version>${org.springframework.version}</version>
       </dependency>
-
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-test</artifactId>
@@ -89,7 +88,32 @@
          <artifactId>spring-orm</artifactId>
          <version>${org.springframework.version}</version>
       </dependency>
-
+      <dependency>
+         <groupId>org.springframework.security</groupId>
+         <artifactId>spring-security-web</artifactId>
+         <version>3.2.3.RELEASE</version>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework.security</groupId>
+         <artifactId>spring-security-config</artifactId>
+         <version>3.2.3.RELEASE</version>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework.security</groupId>
+         <artifactId>spring-security-core</artifactId>
+         <version>3.2.3.RELEASE</version>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework.security.oauth</groupId>
+         <artifactId>spring-security-oauth2</artifactId>
+         <version>1.0.5.RELEASE</version>
+      </dependency>
+<dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-webmvc</artifactId>
+   <version>${org.springframework.version}</version>
+</dependency>
+            
       <!-- slf4j-log4j -->
       <dependency>
          <groupId>org.slf4j</groupId>
