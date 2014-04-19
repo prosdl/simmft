@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import de.simmft.core.model.repository.CoreDataRepository;
 import de.simmft.core.model.repository.TestDataRepository;
 import de.simmft.core.services.boot.BootstrapService;
 import de.simmft.core.tools.PrettyLog;
@@ -18,9 +19,13 @@ public class BootstrapServiceDefaultImpl implements BootstrapService {
    @Autowired
    private TestDataRepository testDataRepository;
    
+   @Autowired
+   private CoreDataRepository coreDataRepository;
+   
    @Override
    public void setup() {
       logger.info(PrettyLog.boxedHeader("MFT bootstrapping ..."));
+      coreDataRepository.generate();
       testDataRepository.generate();
    }
 
