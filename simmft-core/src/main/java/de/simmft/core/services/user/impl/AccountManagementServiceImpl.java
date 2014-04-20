@@ -24,16 +24,14 @@ public class AccountManagementServiceImpl implements AccountManagementService {
    private UserDAO userDAO;
 
    @Override
-   public OauthUser findAuthorizedUser(String username) throws MftCoreServiceException {
-      // FIXME find agent.clientd_id
-      MftAgent mftAgent = mftAgentDAO.findByPropertyUnique("name", username);
+   public OauthUser findAuthorizedUser(String clientId) throws MftCoreServiceException {
+      MftAgent mftAgent = mftAgentDAO.findByClientId(clientId);
       if (mftAgent != null) return mftAgent;
       
-      // FIXME find user.clientd_id
-      User user = userDAO.find(username);
+      User user = userDAO.findByClientId(clientId);
       if (user != null) return user;
       
-      throw new MftCoreServiceException("user '" + username + "' not found.");
+      throw new MftCoreServiceException("user '" + clientId + "' not found.");
    }
 
 }

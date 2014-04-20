@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -20,8 +19,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-
-import de.simmft.core.model.FileMetaInfo;
 
 @Path("/storage")
 public class StorageResource {
@@ -40,13 +37,13 @@ public class StorageResource {
          logger.error("copy",e);
          return Response.serverError().entity(e.getMessage()).build();
       }
-      FileMetaInfo info = new FileMetaInfo();
-      info.setCreated(new Date());
-      info.setUuid("xxxxxxxxxxxxxxxxxxxxx");
+//      FileMetaInfo info = new FileMetaInfo();
+//      info.setCreated(new Date());
+//      info.setUuid("xxxxxxxxxxxxxxxxxxxxx");
       ObjectMapper om = new ObjectMapper();
       om.setSerializationInclusion(Include.NON_NULL);
       ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
 
-      return Response.ok().entity(ow.writeValueAsString(info)).build();
+      return Response.ok().entity(ow.writeValueAsString("ok")).build();
    }
 }

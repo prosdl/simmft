@@ -4,4 +4,6 @@ import de.simmft.core.model.User;
 
 public interface UserDAO extends GenericDAO<User, String>{
 
+   User findByClientId(String clientId);
+
 }
