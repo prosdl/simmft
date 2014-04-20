@@ -76,6 +76,9 @@
       <url-pattern>/rest/*</url-pattern>
    </servlet-mapping>
 
+   <!-- ......................................................................... -->
+   <!-- User by Spring OAuth2 -->
+   <!-- ......................................................................... -->
    <servlet>
       <servlet-name>spring</servlet-name>
       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

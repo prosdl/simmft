@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-   xmlns:tx="http://www.springframework.org/schema/tx"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
    xmlns:context="http://www.springframework.org/schema/context"
-   xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
-   xmlns:sec="http://www.springframework.org/schema/security"
+   xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:sec="http://www.springframework.org/schema/security"
    xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
    xsi:schemaLocation="
       http://www.springframework.org/schema/security/oauth2
@@ -24,14 +22,6 @@
    <context:component-scan base-package="de.simmft"></context:component-scan>
    <import resource="classpath:spring-simmft-model.xml" />
 
-
-   <!-- <security:http> <security:http-basic /> <security:intercept-url pattern="/**" 
-      access="ROLE_MFTUSER" /> </security:http> <security:global-method-security 
-      pre-post-annotations="enabled" /> <security:authentication-manager alias="authenticationManager"> 
-      <security:authentication-provider> <security:user-service> <security:user 
-      authorities="ROLE_MFTUSER" name="admin" password="admin" /> </security:user-service> 
-      </security:authentication-provider> </security:authentication-manager> -->
-
    <oauth:authorization-server
       client-details-service-ref="clientDetails" token-services-ref="tokenServices">
       <oauth:client-credentials />
@@ -39,9 +29,10 @@
 
    <sec:authentication-manager alias="clientAuthenticationManager">
       <sec:authentication-provider
-         user-service-ref="clientDetailsUserService" >
-          <sec:password-encoder hash="sha-256" base64="true"></sec:password-encoder>
-         </sec:authentication-provider>
+         user-service-ref="clientDetailsUserService">
+         <sec:password-encoder hash="sha-256"
+            base64="true"></sec:password-encoder>
+      </sec:authentication-provider>
    </sec:authentication-manager>
 
    <http pattern="/oauth/token" create-session="stateless"
@@ -64,17 +55,11 @@
    <bean id="clientDetails" class="de.simmft.rest.resources.MftClientDetailsService">
    </bean>
 
-<bean id="clientDetailsUserService"
+   <bean id="clientDetailsUserService"
       class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
       <constructor-arg ref="clientDetails" />
-   </bean> 
- 
-<!--    <oauth:client-details-service id="clientDetails">
-      <oauth:client client-id="the_client"
-         authorized-grant-types="client_credentials" authorities="ROLE_MFTUSER"
-         secret="1234567890" />
-   </oauth:client-details-service>
- -->
+   </bean>
+
 
    <http pattern="/**" create-session="never"
       entry-point-ref="oauthAuthenticationEntryPoint"
@@ -82,7 +67,7 @@
       xmlns="http://www.springframework.org/schema/security">
       <anonymous enabled="false" />
 
-      <intercept-url pattern="/rest/**"  />
+      <intercept-url pattern="/rest/**" />
       <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
       <access-denied-handler ref="oauthAccessDeniedHandler" />
    </http>

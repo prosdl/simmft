@@ -30,40 +30,46 @@ import de.simmft.core.services.exception.MftCoreServiceException;
 import de.simmft.core.services.jobs.JobService;
 
 @Path("/jobs")
-public class JobResource implements IJobResource {
+public class JobResource {
    private Logger logger = LoggerFactory.getLogger(JobResource.class);
 
    @Autowired
    private JobService jobService;
-   
+
    @GET
    @Produces("application/json")
+   public Response getJobs(@Context HttpServletRequest httpRequest,
+         @Context UriInfo uriinfo, @QueryParam("mft-agent") String mftAgentName)
+         throws JsonProcessingException {
 
-   @Override
-   public Response getJobs(@Context HttpServletRequest httpRequest, @Context UriInfo uriinfo, @QueryParam("mft-agent") String mftAgentName) throws JsonProcessingException {
+      logger.info(httpRequest.getUserPrincipal().getName()
+            + "  "
+            + httpRequest.isUserInRole(PermissionEnum.MFT_GET_JOB_LIST
+                  .toString()));
+      logger.info("roles:"
+            + SecurityContextHolder.getContext().getAuthentication()
+                  .getAuthorities());
 
-      logger.info(httpRequest.getUserPrincipal().getName() + "  " + httpRequest.isUserInRole(PermissionEnum.MFT_GET_JOB_LIST.toString()));
-      logger.info("roles:" + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-      
       List<Job> jobs;
       try {
          jobs = jobService.getSendOrReceiveJobsForMftAgent(mftAgentName);
       } catch (MftCoreServiceException e) {
-         logger.error("getSendOrReceiveJobsForMftAgent",e);
+         logger.error("getSendOrReceiveJobsForMftAgent", e);
          return Response.serverError().entity(e.getMessage()).build();
       }
-      
-      for (Job job: jobs) {
-         job.add(new Link(uriinfo.getAbsolutePath().toString() + "/" + job.getUuid()));
+
+      for (Job job : jobs) {
+         job.add(new Link(uriinfo.getAbsolutePath().toString() + "/"
+               + job.getUuid()));
       }
-      
+
       ObjectMapper om = new ObjectMapper();
       om.setSerializationInclusion(Include.NON_NULL)
-        .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY,true)
-        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
       ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
 
       return Response.ok().entity(ow.writeValueAsString(jobs)).build();
-    
+
    }
 }
