@@ -1,6 +1,7 @@
 package de.simmft.storage.fs;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +27,8 @@ import de.simmft.storage.base.TransferIdGenerator;
 @Component
 @Profile("storage-fs")
 public class FsStorageManger implements StorageManager {
+   private static final int FILE_WRITE_BUFFER_SIZE = 1024;
+
    public static final String OUTBOX_DIRNAME = "outbox";
 
    private static Logger logger = LoggerFactory
@@ -89,11 +95,34 @@ public class FsStorageManger implements StorageManager {
    }
 
    @Override
-   public OutputStream readFile(String mftAgentId, String jobUri,
-         String transferUri) {
-      throw new RuntimeException("not implemented");
+   public StreamingOutput readFile(String mftAgentId, String jobUri,
+         String transferUri) throws StorageException {
+      String pathToFile = fromBasePath(mftAgentId,"inbox",jobUri,transferUri);
+      final File file = new File(pathToFile);
+      
+      if (!file.exists()) {
+         throw new StorageException("File not found: '" + pathToFile + "'");
+      }
+      
+      return new StreamingOutput() {
+         
+         @Override
+         public void write(OutputStream os) throws IOException,
+               WebApplicationException {
+            FileInputStream is = new FileInputStream(file);
+            byte[] buffer = new byte[FILE_WRITE_BUFFER_SIZE];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
+            is.close();
+            
+            // FIXME remove file
+        }
+      };
    }
 
+   
    public String getBasePath() {
       return basePath;
    }

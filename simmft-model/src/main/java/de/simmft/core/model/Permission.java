@@ -18,6 +18,7 @@ public class Permission implements GrantedAuthority {
    public static enum PermissionEnum {
       MFT_GET_JOB_LIST("mft","jobs","get"),
       MFT_WRITE_TO_STORE("mft","storage","write"),
+      MFT_READ_FROM_STORE("mft","storage","read"),
       REQUEST_CREDENTIALS("admin", "authentication", "create");
 
       private String domain;

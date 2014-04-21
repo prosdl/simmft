@@ -14,6 +14,7 @@ import de.simmft.core.model.OauthUser;
 import de.simmft.core.services.exception.MftCoreServiceException;
 import de.simmft.core.services.user.AccountManagementService;
 
+// FIXME move
 public class MftClientDetailsService implements ClientDetailsService{
    private static Logger logger = LoggerFactory.getLogger(MftClientDetailsService.class);
    
