@@ -1,4 +1,4 @@
-package de.simmft.storage.spi;
+package de.simmft.storage.api;
 
 public interface MftBox {
    
