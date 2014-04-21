@@ -1,10 +1,6 @@
 package de.simmft.rest.resources;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,15 +10,23 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import de.simmft.core.services.exception.MftCoreServiceException;
+import de.simmft.core.services.storage.StorageService;
+import de.simmft.storage.api.FileInfo;
+
 @Path("/storage")
 public class StorageResource {
    private Logger logger = LoggerFactory.getLogger(StorageResource.class);
+   
+   @Autowired
+   private StorageService storageService;
 
    @POST
    @Path("/{mft-agent}/outbox/{job-uri}")
@@ -31,19 +35,17 @@ public class StorageResource {
          @PathParam("job-uri") String jobUri, InputStream is) throws JsonProcessingException {
 
       logger.info("upload");
+      FileInfo fileInfo = null;
       try {
-         Files.copy(is, new File("/tmp/" + jobUri).toPath(), StandardCopyOption.REPLACE_EXISTING);
-      } catch (IOException e) {
+         fileInfo = storageService.storeFile(is, mftAgentId, jobUri);
+      } catch (MftCoreServiceException e) {
          logger.error("copy",e);
          return Response.serverError().entity(e.getMessage()).build();
       }
-//      FileMetaInfo info = new FileMetaInfo();
-//      info.setCreated(new Date());
-//      info.setUuid("xxxxxxxxxxxxxxxxxxxxx");
       ObjectMapper om = new ObjectMapper();
       om.setSerializationInclusion(Include.NON_NULL);
       ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
 
-      return Response.ok().entity(ow.writeValueAsString("ok")).build();
+      return Response.ok().entity(ow.writeValueAsString(fileInfo)).build();
    }
 }
