@@ -31,7 +31,8 @@ public class CoreDataRepositoryImpl implements CoreDataRepository {
          permissionDAO.saveOrUpdate(new Permission(type));
       }
       
-      Role roleMftAgent = new Role("mftagent", PermissionEnum.MFT_GET_JOB_LIST);
+      Role roleMftAgent = new Role("mftagent");
+      roleMftAgent.setPermissions(Permission.getPermissionsMatching("mft:.*"));
       roleDAO.saveOrUpdate(roleMftAgent);
       
    }

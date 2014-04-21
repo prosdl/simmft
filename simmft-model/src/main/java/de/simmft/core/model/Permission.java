@@ -1,5 +1,10 @@
 package de.simmft.core.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class Permission implements GrantedAuthority {
    public static enum PermissionEnum {
       MFT_GET_JOB_LIST("mft","jobs","get"),
+      MFT_WRITE_TO_STORE("mft","storage","write"),
       REQUEST_CREDENTIALS("admin", "authentication", "create");
 
       private String domain;
@@ -27,6 +33,16 @@ public class Permission implements GrantedAuthority {
       public String toString() {
          return new StringBuilder(domain).append(':').append(entity)
                .append(':').append(operation).toString();
+      }
+      
+      public static List<PermissionEnum> valuesMatching(String regex) {
+         ArrayList<PermissionEnum> list = new ArrayList<>();
+         for (PermissionEnum p: values()) {
+            if (p.toString().matches(regex)) {
+               list.add(p);
+            }
+         }
+         return list;
       }
    }
 
@@ -57,5 +73,13 @@ public class Permission implements GrantedAuthority {
    @Override
    public String getAuthority() {
       return type.toString();
+   }
+   
+   public static Set<Permission> getPermissionsMatching(String regex) {
+      Set<Permission> set = new HashSet<>();
+      for (PermissionEnum p: PermissionEnum.valuesMatching(regex)) {
+         set.add(new Permission(p));
+      }
+      return set;
    }
 }
