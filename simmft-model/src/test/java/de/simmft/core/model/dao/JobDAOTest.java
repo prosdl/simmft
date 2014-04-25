@@ -17,7 +17,7 @@ import de.simmft.core.model.SendJob;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:spring-test.xml" }) 
+@ContextConfiguration(locations = { "classpath:spring-simmft-model-emedded-test.xml" }) 
 @TransactionConfiguration(defaultRollback = true)
 @Transactional
 public class JobDAOTest {

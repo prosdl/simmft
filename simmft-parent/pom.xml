@@ -11,6 +11,7 @@
       <module>../simmft-model</module>
       <module>../simmft-rest</module>
       <module>../simmft-core</module>
+      <module>../simmft-core-routing</module>
       <module>../simmft-storage</module>
    </modules>
 

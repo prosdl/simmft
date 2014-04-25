@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>de.simmft</groupId>
+      <artifactId>simmft-parent</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+      <relativePath>../simmft-parent</relativePath>
+   </parent>
+   <artifactId>simmft-core-routing</artifactId>
+   <name>simmft-core-routing</name>
+   <url>http://maven.apache.org</url>
+
+   <properties>
+      <camel.version>2.13.0</camel.version>
+   </properties>
+   <dependencies>
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-core</artifactId>
+         <version>${camel.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-spring</artifactId>
+         <version>${camel.version}</version>
+      </dependency>
+   </dependencies>
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+               <excludes>
+                  <exclude>log4j.properties</exclude>
+               </excludes>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>
