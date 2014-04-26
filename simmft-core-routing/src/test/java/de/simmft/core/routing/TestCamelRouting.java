@@ -91,7 +91,7 @@ public class TestCamelRouting {
 
    @Test
    public void testMft() throws Exception {
-      ProducerTemplate template = camelContext.createProducerTemplate();
+//      ProducerTemplate template = camelContext.createProducerTemplate();
       final AggregationStrategy enrichAggregationStrategy = new EnrichWithReceiversAggregationStrategy();
 
       camelContext.addRoutes(new RouteBuilder() {
