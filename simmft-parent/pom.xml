@@ -13,6 +13,7 @@
       <module>../simmft-core</module>
       <module>../simmft-core-routing</module>
       <module>../simmft-storage</module>
+      <module>../simmft-common</module>
    </modules>
 
 
