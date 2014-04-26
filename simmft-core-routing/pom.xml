@@ -27,6 +27,11 @@
          <artifactId>camel-spring</artifactId>
          <version>${camel.version}</version>
       </dependency>
+      <dependency>
+         <groupId>de.simmft</groupId>
+         <artifactId>simmft-common</artifactId>
+         <version>0.0.1-SNAPSHOT</version>
+      </dependency>
    </dependencies>
    <build>
       <plugins>
