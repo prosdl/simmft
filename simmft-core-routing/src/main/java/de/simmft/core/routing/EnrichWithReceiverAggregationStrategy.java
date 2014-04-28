@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import de.simmft.common.path.MftPath;
-import de.simmft.common.path.MftPathException;
 
 @Component
 public class EnrichWithReceiverAggregationStrategy implements
@@ -21,20 +20,17 @@ public class EnrichWithReceiverAggregationStrategy implements
 
    @Override
    public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-      String pathToJob = (String) oldExchange.getIn().getBody();
+      MftPath pathToJob = (MftPath) oldExchange.getIn().getBody();
+      logger.debug("aggregate: " + pathToJob);
 
-      MftPath path;
       try {
-         path = MftPath.fromString(pathToJob);
-         String jobUUID = path.getJobUUIDSegment().toString();
+         String jobUUID = pathToJob.getJobUUIDSegment().toString();
          if (jobUUID == null ) throw new IllegalArgumentException("jobuuid is null");
 
          oldExchange.getIn().setHeader("to", receiverFinder.findReceiverForJob(jobUUID));
          
          return oldExchange;
-      } catch (MftPathException | IllegalArgumentException e) {
-         logger.error("Exception while getting uuid: " + e.getMessage(), e);
-         // TODO camel error handling?
+      } catch (IllegalArgumentException | MftRoutingException e) {
          throw new RuntimeException(e);
       }
    }

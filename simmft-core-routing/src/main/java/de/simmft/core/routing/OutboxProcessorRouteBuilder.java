@@ -25,8 +25,8 @@ public class OutboxProcessorRouteBuilder extends RouteBuilder {
 
    @Override
    public void configure() throws Exception {
+//      onException(Exception.class).maximumRedeliveries(0).to("log:mft-routing?level=error&showStackTrace=true");
       from("direct:foo").setBody(constant(null));
-
       from("timer://simple?period=" + timerInMilliseconds)
             .process(new Processor() {
                @Override
