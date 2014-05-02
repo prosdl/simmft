@@ -17,7 +17,7 @@ import java.util.UUID;
  * 
  * <path>         ::= <mft-agent-id> [ "/" <box>  ["/" <job-uuid> ["/" <file-uuid> ".mft" ]]]  
  * <mft-agent-id> ::= <xalpha-num> <xalpha-nums>
- * <xalpha-num>   ::= "A"| ... |"Z"| "a" | ... | "z" | "0" | ... | "9" | "-" | "_"  
+ * <xalpha-num>   ::= "A"| ... |"Z"| "a" | ... | "z" | "0" | ... | "9" | "-" | "_" | "."  
  * <xalpha-nums>  ::= } { &lt;xalpha-num&gt; } 
  * {@code
  * <box>          ::= "inbox" | "outbox"
@@ -41,6 +41,7 @@ import java.util.UUID;
  * 
  */
 public class MftPath {
+   public static final String MFT_EXTENSION = ".mft";
    private String mftAgentIdSegment;
    private MailBox boxSegment;
    private UUID jobUUIDSegment;
@@ -119,10 +120,29 @@ public class MftPath {
          throw new MftPathException(
                "Illegal syntax for mft-agent-id: can't be empty");
       }
-      if (!mftAgentIdSegment.matches("[a-zA-Z0-9_\\-]+")) {
+      if (!mftAgentIdSegment.matches("[a-zA-Z0-9_\\-\\.]+")) {
          throw new MftPathException("Illegal syntax for mft-agent-id: '"
                + mftAgentIdSegment + "'");
       }
+   }
+   
+   @Override
+   public String toString() {
+      StringBuilder sb = new StringBuilder(mftAgentIdSegment);
+      if (boxSegment == null) return sb.toString();
+      sb.append("/").append(boxSegment.toString());
+      if (jobUUIDSegment == null) return sb.toString();
+      sb.append("/").append(jobUUIDSegment.toString());
+      if (fileUUIDSegment == null) return sb.toString();
+      sb.append("/").append(fileUUIDSegment.toString()).append(MFT_EXTENSION);
+      return sb.toString();
+   }
+   
+   public String[] toSegmentArray() {
+      if (boxSegment == null) return new String[]{mftAgentIdSegment};
+      if (jobUUIDSegment == null) return new String[]{mftAgentIdSegment, boxSegment.toString()};
+      if (fileUUIDSegment == null) return new String[]{mftAgentIdSegment, boxSegment.toString(),jobUUIDSegment.toString()};
+      return new String[]{mftAgentIdSegment,boxSegment.toString(),jobUUIDSegment.toString(),fileUUIDSegment.toString()};
    }
 
    public static MftPath fromString(String path) throws MftPathException {

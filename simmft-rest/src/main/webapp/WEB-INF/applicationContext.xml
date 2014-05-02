@@ -11,6 +11,7 @@
 
    <context:component-scan base-package="de.simmft"></context:component-scan>
    <import resource="classpath:spring-simmft-model.xml" />
+   <import resource="classpath:spring-simmft-core-routing.xml" />
    <import resource="classpath:spring-simmft-rest-oauth2.xml" />
 
 </beans>

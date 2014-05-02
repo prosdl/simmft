@@ -5,10 +5,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
@@ -18,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import de.simmft.common.path.MftPath;
+import de.simmft.common.path.MftPathException;
 import de.simmft.storage.api.FileInfo;
 import de.simmft.storage.api.StorageException;
 import de.simmft.storage.api.StorageManager;
@@ -26,13 +34,13 @@ import de.simmft.storage.base.TransferIdGenerator;
 
 @Component
 @Profile("storage-fs")
-public class FsStorageManger implements StorageManager {
+public class FsStorageManager implements StorageManager {
    private static final int FILE_WRITE_BUFFER_SIZE = 1024;
 
    public static final String OUTBOX_DIRNAME = "outbox";
 
    private static Logger logger = LoggerFactory
-         .getLogger(FsStorageManger.class);
+         .getLogger(FsStorageManager.class);
 
    // FIXME
    private String basePath = "/tmp";
@@ -97,15 +105,15 @@ public class FsStorageManger implements StorageManager {
    @Override
    public StreamingOutput readFile(String mftAgentId, String jobUri,
          String transferUri) throws StorageException {
-      String pathToFile = fromBasePath(mftAgentId,"inbox",jobUri,transferUri);
+      String pathToFile = fromBasePath(mftAgentId, "inbox", jobUri, transferUri);
       final File file = new File(pathToFile);
-      
+
       if (!file.exists()) {
          throw new StorageException("File not found: '" + pathToFile + "'");
       }
-      
+
       return new StreamingOutput() {
-         
+
          @Override
          public void write(OutputStream os) throws IOException,
                WebApplicationException {
@@ -113,22 +121,103 @@ public class FsStorageManger implements StorageManager {
             byte[] buffer = new byte[FILE_WRITE_BUFFER_SIZE];
             int len;
             while ((len = is.read(buffer)) != -1) {
-                os.write(buffer, 0, len);
+               os.write(buffer, 0, len);
             }
             is.close();
-            
+
             // FIXME remove file
-        }
+         }
       };
    }
 
-   
+   public Path mftPathToNIOPath(MftPath mftPath) {
+      return Paths.get(basePath, mftPath.toSegmentArray());
+   }
+
+   public MftPath nioPathToMftPath(Path path) throws MftPathException {
+      // FIXME basePath as Path
+      int seg = Paths.get(basePath).getNameCount();
+      Path sub = path.subpath(seg, path.getNameCount());
+      return MftPath.fromString(sub.toString());
+   }
+
    public String getBasePath() {
       return basePath;
    }
 
    public void setBasePath(String basePath) {
       this.basePath = basePath;
+   }
+
+   @Override
+   public void atomicMove(MftPath outbox, String mftAgentReceiverId) throws StorageException {
+      Path source = mftPathToNIOPath(outbox);
+      try {
+         Path target = mftPathToNIOPath(new MftPath(mftAgentReceiverId,
+               MftPath.MailBox.INBOX, outbox.getJobUUIDSegment()));
+
+         if (!Files.exists(target)) {
+            Files.createDirectories(target);
+         }
+
+         DirectoryStream<Path> filesStream = Files.newDirectoryStream(source);
+
+         Iterator<Path> filesIterator = filesStream.iterator();
+         while (filesIterator.hasNext()) {
+            Path file = filesIterator.next();
+            Files.move(file, target.resolve(file.getFileName()), StandardCopyOption.ATOMIC_MOVE,
+                  StandardCopyOption.REPLACE_EXISTING);
+         }
+         
+      } catch (MftPathException | IOException e) {
+         throw new StorageException(e);
+      }
+   }
+
+   @Override
+   public List<MftPath> getOutboxList() throws StorageException {
+      DirectoryStream.Filter<Path> filledOutboxFilter = new DirectoryStream.Filter<Path>() {
+
+         @Override
+         public boolean accept(Path entry) throws IOException {
+            Path p = Paths.get(entry.toString(),
+                  MftPath.MailBox.OUTBOX.toString());
+            return Files.exists(p);
+         }
+      };
+
+      try {
+         DirectoryStream<Path> stream = Files.newDirectoryStream(
+               Paths.get(basePath), filledOutboxFilter);
+         Iterator<Path> it = stream.iterator();
+         List<MftPath> list = new ArrayList<>();
+         while (it.hasNext()) {
+            Path mftAgentOutboxDir = Paths.get(it.next().toString(),
+                  MftPath.MailBox.OUTBOX.toString());
+            DirectoryStream<Path> jobStream = Files
+                  .newDirectoryStream(mftAgentOutboxDir);
+            Iterator<Path> jobIterator = jobStream.iterator();
+            while (jobIterator.hasNext()) {
+               Path pathToJob = jobIterator.next();
+               try {
+                  list.add(nioPathToMftPath(pathToJob));
+               } catch (MftPathException | IllegalArgumentException e) {
+                  logger.error("Error while scanning outboxes", e);
+               }
+            }
+         }
+         return list;
+      } catch (IOException e) {
+         throw new StorageException(e);
+      }
+   }
+
+   public static void main(String[] args) throws StorageException,
+         MftPathException {
+      FsStorageManager sm = new FsStorageManager();
+      // sm.atomicMove(MftPath.fromString("test.mft-agent-sender-1/outbox/1899598a-e235-44f3-a8b6-87999166b279"),
+      // "test.mft-agent-sender-2");
+      System.out.println(sm.getOutboxList());
    }
 
 }

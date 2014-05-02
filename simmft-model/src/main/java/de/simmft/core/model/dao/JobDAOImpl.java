@@ -1,6 +1,7 @@
 package de.simmft.core.model.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,12 @@ public class JobDAOImpl extends GenericDAOImpl<Job, String> implements JobDAO {
       return getSession().createCriteria(ReceiveJob.class).
             createAlias("to","t").
             add(Restrictions.eq("t.id",mftAgent.getId())).list();
+   }
+
+   @Override
+   public Set<MftAgent> findAllReceiverForJob(String jobUUID) {
+      Job job = find(jobUUID);
+      return job.getTo();
    }
 
 }

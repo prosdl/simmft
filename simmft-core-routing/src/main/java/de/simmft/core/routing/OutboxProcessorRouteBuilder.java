@@ -6,9 +6,11 @@ import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
+@Qualifier("outboxProcessorRouteBuilder")
 public class OutboxProcessorRouteBuilder extends RouteBuilder {
    private static final Logger logger = LoggerFactory
          .getLogger(OutboxProcessorRouteBuilder.class);
@@ -20,11 +22,12 @@ public class OutboxProcessorRouteBuilder extends RouteBuilder {
    private EnrichWithReceiverAggregationStrategy enrichWithReceiverAggregationStrategy;
    
    // FIXME
-   private int timerInMilliseconds = 500;
+   private int timerInMilliseconds = 5000;
 
 
    @Override
    public void configure() throws Exception {
+      logger.info("configuring route ...");
 //      onException(Exception.class).maximumRedeliveries(0).to("log:mft-routing?level=error&showStackTrace=true");
       from("direct:foo").setBody(constant(null));
       from("timer://simple?period=" + timerInMilliseconds)
