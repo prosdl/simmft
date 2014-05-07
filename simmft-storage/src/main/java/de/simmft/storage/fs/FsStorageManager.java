@@ -150,28 +150,42 @@ public class FsStorageManager implements StorageManager {
    }
 
    @Override
-   public void atomicMove(MftPath outbox, String mftAgentReceiverId) throws StorageException {
+   public void atomicMove(MftPath outbox, String mftAgentReceiverId)
+         throws StorageException {
       Path source = mftPathToNIOPath(outbox);
+      Path target;
       try {
-         Path target = mftPathToNIOPath(new MftPath(mftAgentReceiverId,
+         target = mftPathToNIOPath(new MftPath(mftAgentReceiverId,
                MftPath.MailBox.INBOX, outbox.getJobUUIDSegment()));
+      } catch (MftPathException e) {
+         throw new StorageException(e);
+      }
 
-         if (!Files.exists(target)) {
+      if (!Files.exists(target)) {
+         try {
             Files.createDirectories(target);
+         } catch (IOException e) {
+            throw new StorageException(e);
          }
+      }
 
-         DirectoryStream<Path> filesStream = Files.newDirectoryStream(source);
+      try (DirectoryStream<Path> filesStream = Files.newDirectoryStream(source)) {
 
          Iterator<Path> filesIterator = filesStream.iterator();
          while (filesIterator.hasNext()) {
             Path file = filesIterator.next();
-            Files.move(file, target.resolve(file.getFileName()), StandardCopyOption.ATOMIC_MOVE,
-                  StandardCopyOption.REPLACE_EXISTING);
+            try {
+               Files.move(file, target.resolve(file.getFileName()),
+                     StandardCopyOption.ATOMIC_MOVE,
+                     StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+               throw new StorageException(e);
+            }
          }
-         
-      } catch (MftPathException | IOException e) {
+      } catch (IOException e) {
          throw new StorageException(e);
       }
+
    }
 
    @Override
@@ -186,24 +200,26 @@ public class FsStorageManager implements StorageManager {
          }
       };
 
-      try {
-         DirectoryStream<Path> stream = Files.newDirectoryStream(
-               Paths.get(basePath), filledOutboxFilter);
+      try (DirectoryStream<Path> stream = Files.newDirectoryStream(
+            Paths.get(basePath), filledOutboxFilter)) {
          Iterator<Path> it = stream.iterator();
          List<MftPath> list = new ArrayList<>();
          while (it.hasNext()) {
             Path mftAgentOutboxDir = Paths.get(it.next().toString(),
                   MftPath.MailBox.OUTBOX.toString());
-            DirectoryStream<Path> jobStream = Files
-                  .newDirectoryStream(mftAgentOutboxDir);
-            Iterator<Path> jobIterator = jobStream.iterator();
-            while (jobIterator.hasNext()) {
-               Path pathToJob = jobIterator.next();
-               try {
-                  list.add(nioPathToMftPath(pathToJob));
-               } catch (MftPathException | IllegalArgumentException e) {
-                  logger.error("Error while scanning outboxes", e);
+            try (DirectoryStream<Path> jobStream = Files
+                  .newDirectoryStream(mftAgentOutboxDir)) {
+               Iterator<Path> jobIterator = jobStream.iterator();
+               while (jobIterator.hasNext()) {
+                  Path pathToJob = jobIterator.next();
+                  try {
+                     list.add(nioPathToMftPath(pathToJob));
+                  } catch (MftPathException | IllegalArgumentException e) {
+                     logger.error("Error while scanning outboxes", e);
+                  }
                }
+            } catch (IOException e) {
+               throw new StorageException(e);
             }
          }
          return list;
