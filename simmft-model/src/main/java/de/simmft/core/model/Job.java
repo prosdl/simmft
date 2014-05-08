@@ -14,6 +14,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -56,6 +57,9 @@ public class Job extends SelfDescribingResource {
    
    @ManyToMany
    private Set<MftAgent> to;
+   
+   @Transient
+   private String type;
    
    public Job() {
    }
@@ -141,6 +145,10 @@ public class Job extends SelfDescribingResource {
    @JsonProperty
    public String getType() {
       return this.getClass().getSimpleName();
+   }
+   
+   public void setType(String type) {
+      this.type= type;
    }
    
 }

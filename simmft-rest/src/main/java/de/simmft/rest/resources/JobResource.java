@@ -42,13 +42,15 @@ public class JobResource {
          @Context UriInfo uriinfo, @QueryParam("mft-agent") String mftAgentName)
          throws JsonProcessingException {
 
-      logger.info(httpRequest.getUserPrincipal().getName()
-            + "  "
-            + httpRequest.isUserInRole(PermissionEnum.MFT_GET_JOB_LIST
-                  .toString()));
-      logger.info("roles:"
-            + SecurityContextHolder.getContext().getAuthentication()
-                  .getAuthorities());
+      if (httpRequest.getUserPrincipal() != null) {
+         logger.info(httpRequest.getUserPrincipal().getName()
+               + "  "
+               + httpRequest.isUserInRole(PermissionEnum.MFT_GET_JOB_LIST
+                     .toString()));
+         logger.info("roles:"
+               + SecurityContextHolder.getContext().getAuthentication()
+                     .getAuthorities());
+      }
 
       List<Job> jobs;
       try {
@@ -69,7 +71,12 @@ public class JobResource {
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
       ObjectWriter ow = om.writerWithDefaultPrettyPrinter();
 
-      return Response.ok().entity(ow.writeValueAsString(jobs)).build();
+      return Response.ok().entity(ow.writeValueAsString(jobs))
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Access-Control-Allow-Credentials", "true")
+            .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
+            .header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+            .build();
 
    }
 }
